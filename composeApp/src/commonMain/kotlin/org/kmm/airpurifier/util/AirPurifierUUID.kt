@@ -1,0 +1,16 @@
+package org.kmm.airpurifier.util
+
+import com.benasher44.uuid.uuidFrom
+
+object AirPurifierUUID {
+    val SERVICE_UUID_AIR_PURIFIER = uuidFrom("00003000-0000-1000-8000-00805f9b34fb")
+    val CHAR_UUID_POWER = uuidFrom("00003001-0000-1000-8000-00805f9b34fb") // Power Icon
+    val CHAR_UUID_AQI = uuidFrom("00003002-0000-1000-8000-00805f9b34fb")
+    val CHAR_UUID_MOTOR_SPEED = uuidFrom("00003003-0000-1000-8000-00805f9b34fb")
+    val CHAR_UUID_FILTER_LIFE = uuidFrom("00003004-0000-1000-8000-00805f9b34fb")
+    val CHAR_UUID_UV_LIGHT = uuidFrom("00003005-0000-1000-8000-00805f9b34fb")
+    val CHAR_UUID_AMBIENT_LIGHT = uuidFrom("00003006-0000-1000-8000-00805f9b34fb")
+    val CHAR_UUID_INDICATOR_LED = uuidFrom("00003007-0000-1000-8000-00805f9b34fb") // Moon Icon
+    val CHAR_UUID_ERROR = uuidFrom("00003008-0000-1000-8000-00805f9b34fb")
+    val CHAR_UUID_ECHO = uuidFrom("00003009-0000-1000-8000-00805f9b34fb") // Leaf Icon
+}
