@@ -10,6 +10,8 @@ This Air Purifier app delivers a seamless experience for both Android and iOS us
 - **Flow**: For asynchronous data streams.
 - **Actual/Expect**: To handle platform-specific implementations in Kotlin.
 - **Compose Multiplatform UI**: To share UI code across Android and iOS platforms.
+- **Datetime API**: DB datetime code across Android and iOS platforms.
+- **Custom Fonts**: Used custom fonts across Android and iOS platforms.
 
 ---
 
