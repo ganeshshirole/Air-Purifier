@@ -66,11 +66,12 @@ This folder contains the entry point for the iOS application. Even when sharing 
 
 ## Todo
   - Refactor Project with MVI architecture (In current implementation we only focused on adding common libraries for Android and iOS)
+  - Improve BLE code
   - Add Encryption in BLE communication
   - Develop API in kotlin ktor
   - Add Authentication in App (Backend + FrontEnd)
-  - Maintain Air Purifire 5 devices
-
+  - Unit Tests
+  - Update all dependancies whenewer new available
 
 ## Learn More
 - [Kotlin Multiplatform Documentation](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)
