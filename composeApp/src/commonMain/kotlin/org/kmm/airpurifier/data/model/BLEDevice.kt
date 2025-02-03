@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.database
+package org.kmm.airpurifier.data.model
 
 import androidx.room.Entity
 import androidx.room.Index

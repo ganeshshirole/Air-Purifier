@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.dependencies
+package org.kmm.airpurifier.presentation.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,9 +12,11 @@ import kotlinx.datetime.Clock
 import org.kmm.airpurifier.ble.client.Client
 import org.kmm.airpurifier.ble.client.ClientCharacteristic
 import org.kmm.airpurifier.ble.client.ClientService
-import org.kmm.airpurifier.database.BLEDevice
-import org.kmm.airpurifier.database.BLEDeviceDao
-import org.kmm.airpurifier.dependencies.DataParser.toDisplayString
+import org.kmm.airpurifier.data.model.BLEDevice
+import org.kmm.airpurifier.domain.DataParser
+import org.kmm.airpurifier.domain.DataParser.toDisplayString
+import org.kmm.airpurifier.domain.repository.DeviceRepository
+import org.kmm.airpurifier.presentation.state.ViewState
 import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_AMBIENT_LIGHT
 import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_AQI
 import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_ECHO
@@ -26,13 +28,10 @@ import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_POWER
 import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_UV_LIGHT
 import org.kmm.airpurifier.util.AirPurifierUUID.SERVICE_UUID_AIR_PURIFIER
 
-class HomeViewModel(private val client: Client, private val dao: BLEDeviceDao) : ViewModel() {
+class HomeViewModel(private val client: Client, private val deviceRepository: DeviceRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(ViewState())
     val state = _state.asStateFlow()
-
-    //    private var _ambientLight: Int = 0
-//    private var lastSpeed: Int = 0
 
     private lateinit var powerCharacteristic: ClientCharacteristic
     private lateinit var motorSpeedCharacteristic: ClientCharacteristic
@@ -47,7 +46,7 @@ class HomeViewModel(private val client: Client, private val dao: BLEDeviceDao) :
         var address: String? = null
         viewModelScope.launch {
             if (devAddress.isEmpty()) {
-                val bleDevice = dao.getBLEDevice()
+                val bleDevice = deviceRepository.getBLEDevice()
                 if (bleDevice != null) {
                     name = bleDevice.name
                     address = bleDevice.address
@@ -60,16 +59,6 @@ class HomeViewModel(private val client: Client, private val dao: BLEDeviceDao) :
             if (address == null) return@launch
             try {
                 client.connect(address!!, viewModelScope)
-//            if (client.isConnected()) {
-//                _state.value = _state.value.copy(isConnected = true)
-//                dao.insertWithLimit(BLEDevice(name!!, address!!, timestamp))
-//                val count = dao.count()
-//                Napier.i("BLE DB Devices $count", tag = TAG)
-//            } else {
-//                _state.value = _state.value.copy(isConnected = false)
-//                return@launch
-//            }
-
                 client.connectionStatus(viewModelScope) { isConnected ->
                     Napier.i("BLE Connection $isConnected", tag = TAG)
                     viewModelScope.launch {
@@ -77,8 +66,8 @@ class HomeViewModel(private val client: Client, private val dao: BLEDeviceDao) :
                         if (isConnected) {
                             val timestamp =
                                 Clock.System.now().toEpochMilliseconds()
-                            dao.insertWithLimit(BLEDevice(name!!, address!!, timestamp))
-                            val count = dao.count()
+                            deviceRepository.insertWithLimit(BLEDevice(name!!, address!!, timestamp))
+                            val count = deviceRepository.count()
                             Napier.i("BLE DB Devices $count", tag = TAG)
                         }
                     }
@@ -258,23 +247,6 @@ class HomeViewModel(private val client: Client, private val dao: BLEDeviceDao) :
             }
         }
     }
-
-    // This logic should implement in firmware
-//    private fun echoValueBasedOnMotorSpeed(motorSpeed: Int) {
-//        if (motorSpeed > 0) {
-//            echoValue(false)
-//        }
-//        lastSpeed = motorSpeed
-//    }
-
-    // This logic should implement in firmware
-//    private fun motorSpeedBasedOnEcho(isEchoOn: Boolean) {
-//        if (isEchoOn) motorSpeedValue(0) else motorSpeedValue(lastSpeed)
-//    }
-
-//    private fun echoValue(isEchoOn: Boolean) {
-//        _state.value = _state.value.copy(echo = isEchoOn)
-//    }
 
     fun echo(isEchoOn: Boolean) {
         viewModelScope.launch {

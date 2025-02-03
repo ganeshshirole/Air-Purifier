@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.ui.screen
+package org.kmm.airpurifier.presentation.ui.screen
 
 import airpurifier.composeapp.generated.resources.Res
 import airpurifier.composeapp.generated.resources.bluetooth_b_brands_solid
@@ -58,8 +58,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,7 +77,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import org.kmm.airpurifier.dependencies.HomeViewModel
+import org.kmm.airpurifier.presentation.ui.viewmodel.HomeViewModel
 import org.kmm.airpurifier.util.OstrichSansFontFamily
 import org.kmm.airpurifier.util.PrimaryColor
 import org.kmm.airpurifier.util.RobotoFontFamily
@@ -86,7 +86,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(navController: NavController) {
-    var showDialog by rememberSaveable { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
 
     val viewModel = koinViewModel<HomeViewModel>()
 //    val scannerViewModel = koinViewModel<ScannerViewModel>()
@@ -203,7 +203,7 @@ fun HomeScreen(navController: NavController) {
 @Composable
 fun BlinkingIcon(isConnected: Boolean) {
     // State to control blinking when connected
-    var isBlinking by rememberSaveable { mutableStateOf(false) }
+    var isBlinking by remember { mutableStateOf(false) }
 
     // Start blinking if connected, stop if disconnected
     LaunchedEffect(isConnected) {
@@ -637,9 +637,9 @@ fun FANButton(
     enabled: Boolean
 ) {
     // State to trigger the spinning animation
-    var isSpinning by rememberSaveable() { mutableStateOf(false) }
+    var isSpinning by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val rotation = rememberSaveable { Animatable(0f) }
+    val rotation = remember { Animatable(0f) }
 
     // Trigger animation on click
     BoxWithConstraints(

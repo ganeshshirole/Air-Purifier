@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.dependencies
+package org.kmm.airpurifier.domain
 
 object DataParser {
     fun ByteArray.toDisplayString(): String {

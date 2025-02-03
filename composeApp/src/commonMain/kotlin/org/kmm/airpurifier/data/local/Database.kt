@@ -5,8 +5,8 @@ import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import org.kmm.airpurifier.database.BLEDevice
-import org.kmm.airpurifier.database.BLEDeviceDao
+import org.kmm.airpurifier.data.model.BLEDevice
+import org.kmm.airpurifier.data.local.BLEDeviceDao
 
 @ConstructedBy(BLEDatabaseConstructor::class)
 @Database(

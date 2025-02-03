@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.model
+package org.kmm.airpurifier.domain.model
 
 data class MyDevice(
     val name: String,

@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.dependencies
+package org.kmm.airpurifier.presentation.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.kmm.airpurifier.ble.scanner.Scanner
-import org.kmm.airpurifier.database.BLEDeviceDao
-import org.kmm.airpurifier.model.MyDevice
+import org.kmm.airpurifier.domain.repository.DeviceRepository
+import org.kmm.airpurifier.domain.model.MyDevice
 
-class ScannerViewModel(private val scanner: Scanner, private val dao: BLEDeviceDao) : ViewModel() {
+class ScannerViewModel(private val scanner: Scanner, private val deviceRepository: DeviceRepository) : ViewModel() {
     var selectedIoTDevice: MyDevice? = null
 
     private val _stateAllDevices = MutableStateFlow(emptyList<MyDevice>())
@@ -31,7 +31,7 @@ class ScannerViewModel(private val scanner: Scanner, private val dao: BLEDeviceD
     }
 
     fun scan() {
-        dao.getAllBLEDevice().onEach { devices ->
+        deviceRepository.getAllBLEDevice().onEach { devices ->
             _stateSavedDevices = devices.mapIndexed { index, it ->
                 MyDevice(
                     it.name,
@@ -59,13 +59,13 @@ class ScannerViewModel(private val scanner: Scanner, private val dao: BLEDeviceD
 
     fun deleteDevice(address: String) {
         viewModelScope.launch {
-            dao.deleteByAddress(address)
+            deviceRepository.deleteByAddress(address)
         }
     }
 
     fun renameDevice(address: String, newName: String) {
         viewModelScope.launch {
-            dao.updateDeviceNameByAddress(address, newName)
+            deviceRepository.updateDeviceNameByAddress(address, newName)
         }
     }
 

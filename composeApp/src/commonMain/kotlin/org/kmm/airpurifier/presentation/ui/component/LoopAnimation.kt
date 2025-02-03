@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.ui.component
+package org.kmm.airpurifier.presentation.ui.component
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat

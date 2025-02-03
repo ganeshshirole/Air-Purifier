@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.ui.screen
+package org.kmm.airpurifier.presentation.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,9 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import org.kmm.airpurifier.RequestPermissions
-import org.kmm.airpurifier.ui.component.LoopAnimation
-import org.kmm.airpurifier.dependencies.ScannerViewModel
-import org.kmm.airpurifier.model.MyDevice
+import org.kmm.airpurifier.presentation.ui.component.LoopAnimation
+import org.kmm.airpurifier.presentation.ui.viewmodel.ScannerViewModel
+import org.kmm.airpurifier.domain.model.MyDevice
 import org.kmm.airpurifier.util.SecondaryColor
 import org.koin.compose.viewmodel.koinViewModel
 

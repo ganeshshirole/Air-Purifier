@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.ui.component
+package org.kmm.airpurifier.presentation.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.material.Icon

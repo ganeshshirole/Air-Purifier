@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.ui.component
+package org.kmm.airpurifier.presentation.ui.component
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures

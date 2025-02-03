@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.ui.screen
+package org.kmm.airpurifier.presentation.ui.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

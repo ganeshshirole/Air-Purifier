@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.database
+package org.kmm.airpurifier.data.remote.local
 
 import BLEDeviceDatabase
 import android.content.Context

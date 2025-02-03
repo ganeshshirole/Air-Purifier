@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.database
+package org.kmm.airpurifier.data.local
 
 import BLEDeviceDatabase
 import androidx.room.Room

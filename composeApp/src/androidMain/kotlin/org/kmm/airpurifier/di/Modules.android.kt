@@ -1,7 +1,7 @@
 package org.kmm.airpurifier.di
 
 import getRoomDatabase
-import org.kmm.airpurifier.database.getBLEDeviceDatabase
+import org.kmm.airpurifier.data.remote.local.getBLEDeviceDatabase
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 

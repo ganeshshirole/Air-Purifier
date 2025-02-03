@@ -1,4 +1,4 @@
-package org.kmm.airpurifier.dependencies
+package org.kmm.airpurifier.presentation.state
 
 data class ViewState(
     val isConnected: Boolean = false,
