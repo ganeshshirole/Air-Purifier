@@ -10,5 +10,6 @@ data class ViewState(
     val power: Boolean = false,
     val echo: Boolean = false,
     val isLedOn: Boolean = false,
-    val error: Boolean = false
+    val error: Boolean = false,
+    val showDialog: Boolean = false
 )

@@ -12,9 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SecondScreen(navController: NavController) {
+fun SecondScreen(popBackStack: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize(),
@@ -23,9 +24,15 @@ fun SecondScreen(navController: NavController) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = "This is the Second Screen")
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { navController.popBackStack() }) {
+            Button(onClick = { popBackStack() }) {
                 Text("Go Back to Home Screen")
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun SecondScreenPreview() {
+    SecondScreen {}
 }

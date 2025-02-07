@@ -1,10 +1,11 @@
 package org.kmm.airpurifier.presentation.ui.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ import org.kmm.airpurifier.data.model.BLEDevice
 import org.kmm.airpurifier.domain.DataParser
 import org.kmm.airpurifier.domain.DataParser.toDisplayString
 import org.kmm.airpurifier.domain.repository.DeviceRepository
+import org.kmm.airpurifier.presentation.intent.HomeScreenIntent
 import org.kmm.airpurifier.presentation.state.ViewState
 import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_AMBIENT_LIGHT
 import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_AQI
@@ -30,8 +32,8 @@ import org.kmm.airpurifier.util.AirPurifierUUID.SERVICE_UUID_AIR_PURIFIER
 
 class HomeViewModel(private val client: Client, private val deviceRepository: DeviceRepository) : ViewModel() {
 
-    private val _state = MutableStateFlow(ViewState())
-    val state = _state.asStateFlow()
+    var state by mutableStateOf(ViewState())
+        private set
 
     private lateinit var powerCharacteristic: ClientCharacteristic
     private lateinit var motorSpeedCharacteristic: ClientCharacteristic
@@ -41,7 +43,25 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
     private lateinit var errorCharacteristic: ClientCharacteristic
     private lateinit var echoCharacteristic: ClientCharacteristic
 
-    fun connectToDevice(devName: String = "", devAddress: String = "") {
+    fun handleIntent(intent: HomeScreenIntent) {
+        when (intent) {
+            is HomeScreenIntent.CONNECT -> connectToDevice()
+            is HomeScreenIntent.AMBIENTLIGHT -> ambientLight()
+            is HomeScreenIntent.AmbientLightValue -> ambientLightValue(intent.lightValue)
+            is HomeScreenIntent.Echo -> echo(intent.isOn)
+            is HomeScreenIntent.IndicatorLed -> indicatorLED(intent.isOn)
+            is HomeScreenIntent.MotorSpeed -> motorSpeed(intent.speed)
+            is HomeScreenIntent.Power -> power(intent.isOn)
+            is HomeScreenIntent.UVLight -> uvLight(intent.isOn)
+            is HomeScreenIntent.ShowDialog -> showDialog(intent.isShow)
+        }
+    }
+
+    private fun showDialog(show: Boolean) {
+        state = state.copy(showDialog = show)
+    }
+
+    private fun connectToDevice(devName: String = "", devAddress: String = "") {
         var name: String? = null
         var address: String? = null
         viewModelScope.launch {
@@ -62,7 +82,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
                 client.connectionStatus(viewModelScope) { isConnected ->
                     Napier.i("BLE Connection $isConnected", tag = TAG)
                     viewModelScope.launch {
-                        _state.value = _state.value.copy(isConnected = isConnected)
+                        state = state.copy(isConnected = isConnected)
                         if (isConnected) {
                             val timestamp =
                                 Clock.System.now().toEpochMilliseconds()
@@ -89,7 +109,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
                 filterLifeCharacteristic.getNotifications()
                     .onEach {
                         Napier.i("Filter Life $it", tag = TAG)
-                        _state.value = _state.value.copy(filterLife = DataParser.byteArrayToInt(it))
+                        state = state.copy(filterLife = DataParser.byteArrayToInt(it))
                     }
                     .launchIn(viewModelScope)
 
@@ -97,7 +117,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
                 characteristicAQI.getNotifications()
                     .onEach {
                         Napier.i("AQI ${it.toDisplayString()}", tag = TAG)
-                        _state.value = _state.value.copy(
+                        state = state.copy(
                             aiq = DataParser.byteArrayToInt(it)
                         )
                     }
@@ -148,51 +168,51 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
     private suspend fun setupAllNotifications() {
         setupNotifications(motorSpeedCharacteristic) { motorSpeed ->
 //            echoValueBasedOnMotorSpeed(motorSpeed)
-            _state.value = _state.value.copy(motorSpeed = motorSpeed)
+            state = state.copy(motorSpeed = motorSpeed)
             Napier.i("Motor Speed $motorSpeed", tag = TAG)
         }
 
         setupNotifications(powerCharacteristic) { power ->
-            _state.value = _state.value.copy(power = power == 1)
+            state = state.copy(power = power == 1)
             Napier.i("Power Status $power", tag = TAG)
         }
 
         setupNotifications(uvLightCharacteristic) { uv ->
-            _state.value = _state.value.copy(uv = uv == 1)
+            state = state.copy(uv = uv == 1)
             Napier.i("UV Light Status $uv", tag = TAG)
         }
 
         setupNotifications(indicatorLEDCharacteristic) { ledStatus ->
-            _state.value = _state.value.copy(isLedOn = ledStatus == 1)
+            state = state.copy(isLedOn = ledStatus == 1)
             Napier.i("Indicator LED Status $ledStatus", tag = TAG)
         }
 
         setupNotifications(ambientLightCharacteristic) { ambientLight ->
-            _state.value = _state.value.copy(ambientLight = ambientLight)
+            state = state.copy(ambientLight = ambientLight)
             Napier.i("Ambient Light $ambientLight", tag = TAG)
         }
 
         setupNotifications(errorCharacteristic) { errorStatus ->
-            _state.value = _state.value.copy(error = errorStatus == 1)
+            state = state.copy(error = errorStatus == 1)
             Napier.i("Error Status $errorStatus", tag = TAG)
         }
 
         setupNotifications(echoCharacteristic) { echoStatus ->
-            _state.value = _state.value.copy(echo = echoStatus == 1)
+            state = state.copy(echo = echoStatus == 1)
             Napier.i("Echo Status $echoStatus", tag = TAG)
         }
     }
 
     fun ambientLightValue(percent: Int) {
 //        _ambientLight = percent
-        _state.value = _state.value.copy(ambientLight = percent)
+        state = state.copy(ambientLight = percent)
     }
 
     fun ambientLight() {
         viewModelScope.launch {
             try {
-//                _state.value = _state.value.copy(ambientLight = _ambientLight)
-                ambientLightCharacteristic.write(DataParser.intToByteArray(_state.value.ambientLight))
+//                state = state.copy(ambientLight = _ambientLight)
+                ambientLightCharacteristic.write(DataParser.intToByteArray(state.ambientLight))
             } catch (t: Throwable) {
                 t.printStackTrace()
             }
@@ -202,8 +222,8 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
     fun power(power: Boolean) {
         viewModelScope.launch {
             try {
-                _state.value = _state.value.copy(power = power)
-                powerCharacteristic.write(DataParser.intToByteArray(if (_state.value.power) 1 else 0))
+                state = state.copy(power = power)
+                powerCharacteristic.write(DataParser.intToByteArray(if (state.power) 1 else 0))
             } catch (t: Throwable) {
                 t.printStackTrace()
             }
@@ -213,7 +233,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
     fun uvLight(isOn: Boolean) {
         viewModelScope.launch {
             try {
-                _state.value = _state.value.copy(uv = isOn)
+                state = state.copy(uv = isOn)
                 uvLightCharacteristic.write(DataParser.intToByteArray(if (isOn) 1 else 0))
             } catch (t: Throwable) {
                 t.printStackTrace()
@@ -224,7 +244,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
     fun indicatorLED(isOn: Boolean) {
         viewModelScope.launch {
             try {
-                _state.value = _state.value.copy(isLedOn = isOn)
+                state = state.copy(isLedOn = isOn)
                 indicatorLEDCharacteristic.write(DataParser.intToByteArray(if (isOn) 1 else 0))
             } catch (t: Throwable) {
                 t.printStackTrace()
@@ -233,14 +253,14 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
     }
 
 //    private fun motorSpeedValue(speed: Int) {
-//        _state.value = _state.value.copy(motorSpeed = speed)
+//        state = state.copy(motorSpeed = speed)
 //    }
 
     fun motorSpeed(speed: Int) {
         viewModelScope.launch {
             try {
 //                echoValueBasedOnMotorSpeed(speed)
-                _state.value = _state.value.copy(motorSpeed = speed)
+                state = state.copy(motorSpeed = speed)
                 motorSpeedCharacteristic.write(DataParser.intToByteArray(speed))
             } catch (t: Throwable) {
                 t.printStackTrace()
@@ -252,7 +272,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
         viewModelScope.launch {
             try {
 //                motorSpeedBasedOnEcho(isEchoOn)
-                _state.value = _state.value.copy(echo = isEchoOn)
+                state = state.copy(echo = isEchoOn)
                 echoCharacteristic.write(DataParser.intToByteArray(if (isEchoOn) 1 else 0))
             } catch (t: Throwable) {
                 t.printStackTrace()
@@ -263,7 +283,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
     fun errorState(hasError: Boolean) {
         viewModelScope.launch {
             try {
-                _state.value = _state.value.copy(error = hasError)
+                state = state.copy(error = hasError)
                 errorCharacteristic.write(DataParser.intToByteArray(if (hasError) 1 else 0))
             } catch (t: Throwable) {
                 t.printStackTrace()

@@ -72,28 +72,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import org.kmm.airpurifier.presentation.ui.viewmodel.HomeViewModel
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.kmm.airpurifier.presentation.intent.HomeScreenIntent
+import org.kmm.airpurifier.presentation.state.ViewState
 import org.kmm.airpurifier.util.OstrichSansFontFamily
 import org.kmm.airpurifier.util.PrimaryColor
 import org.kmm.airpurifier.util.RobotoFontFamily
 import org.kmm.airpurifier.util.SecondaryColor
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreen(navController: NavController) {
-    var showDialog by remember { mutableStateOf(false) }
-
-    val viewModel = koinViewModel<HomeViewModel>()
-//    val scannerViewModel = koinViewModel<ScannerViewModel>()
-    val state = viewModel.state.collectAsStateWithLifecycle()
+fun HomeScreen(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
 
     LaunchedEffect(Unit) {
-        viewModel.connectToDevice()
+        onEvent(HomeScreenIntent.CONNECT)
     }
 
     Scaffold(
@@ -113,7 +107,7 @@ fun HomeScreen(navController: NavController) {
                     // Centered Title
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = if (state.value.isConnected) "Connected" else "Disconnected",
+                            text = if (state.isConnected) "Connected" else "Disconnected",
                             fontWeight = FontWeight.Light,
                             fontSize = 18.sp,
                             fontFamily = RobotoFontFamily(),
@@ -126,7 +120,7 @@ fun HomeScreen(navController: NavController) {
                 },
                 navigationIcon = {
                     // Left Burger Icon
-                    IconButton(onClick = { showDialog = true }) {
+                    IconButton(onClick = { onEvent(HomeScreenIntent.ShowDialog(true)) }) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Menu",
@@ -138,7 +132,7 @@ fun HomeScreen(navController: NavController) {
                 actions = {
                     // Right Bluetooth Icon
                     IconButton(onClick = { /* Handle Bluetooth action */ }) {
-                        BlinkingIcon(isConnected = state.value.isConnected)
+                        BlinkingIcon(isConnected = state.isConnected)
                     }
                 }
             )
@@ -164,6 +158,7 @@ fun HomeScreen(navController: NavController) {
                     verticalArrangement = Arrangement.Top
                 ) {
                     AQICircularButton(
+                        state,
                         smallScreen = smallScreen,
                         modifier = Modifier.then(
                             if (smallScreen) {
@@ -171,29 +166,30 @@ fun HomeScreen(navController: NavController) {
                             } else {
                                 Modifier.weight(1f)
                             }
-                        ))
+                        )
+                    )
                     Spacer(modifier = Modifier.size(8.dp))
-                    FanSpeedBox()
+                    FanSpeedBox(state, onEvent)
                     Spacer(modifier = Modifier.size(8.dp))
-                    AmbientLightBox()
+                    AmbientLightBox(state, onEvent)
                     Spacer(modifier = Modifier.size(8.dp))
-                    UVBox()
+                    UVBox(state, onEvent)
                     Spacer(modifier = Modifier.size(8.dp))
-                    CartridgeLifeBox()
+                    CartridgeLifeBox(state)
                     Spacer(modifier = Modifier.size(8.dp))
-                    BottomButtonBox()
+                    BottomButtonBox(state, onEvent)
                     Spacer(modifier = Modifier.size(8.dp))
 //                    Button(onClick = { navController.navigate("second") }) {
 //                        Text("Go to Second Screen")
 //                    }
                 }
                 ScanBleDeviceDialog(
-                    showDialog = showDialog,
-                    onDismiss = { showDialog = false },
+                    showDialog = state.showDialog,
+                    onDismiss = { onEvent(HomeScreenIntent.ShowDialog(false)) },
                     maxHeight
                 ) {
-                    showDialog = false
-                    viewModel.connectToDevice(it.name, it.address)
+                    onEvent(HomeScreenIntent.ShowDialog(false))
+                    onEvent(HomeScreenIntent.CONNECT)
                 }
             }
         }
@@ -231,10 +227,10 @@ fun BlinkingIcon(isConnected: Boolean) {
 
 @Composable
 fun AQICircularButton(
+    state: ViewState,
     smallScreen: Boolean,
-    modifier: Modifier = Modifier) {
-    val viewModel = koinViewModel<HomeViewModel>()
-    val state = viewModel.state.collectAsStateWithLifecycle()
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier.padding(10.dp),
         contentAlignment = Alignment.Center // Center the inner circle
@@ -276,7 +272,7 @@ fun AQICircularButton(
                         ),
                     )
                     Text(
-                        text = state.value.aiq.toString(),
+                        text = state.aiq.toString(),
                         color = Color.White,
                         fontSize = if (smallScreen) 76.sp else 90.sp,
                         fontWeight = FontWeight.Medium,
@@ -289,9 +285,7 @@ fun AQICircularButton(
 }
 
 @Composable
-fun FanSpeedBox() {
-    val viewModel = koinViewModel<HomeViewModel>()
-    val state = viewModel.state.collectAsStateWithLifecycle()
+fun FanSpeedBox(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
 
     Box(modifier = Modifier.padding(horizontal = 10.dp), contentAlignment = Alignment.Center) {
         Image(
@@ -324,28 +318,28 @@ fun FanSpeedBox() {
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 FANButton(modifier = Modifier.size(40.dp),
-                    enabled = !state.value.power && state.value.isConnected,
-                    isSelected = state.value.motorSpeed == 1,
+                    enabled = !state.power && state.isConnected,
+                    isSelected = state.motorSpeed == 1,
                     onClick = {
-                        viewModel.motorSpeed(1)
+                        onEvent(HomeScreenIntent.MotorSpeed(1))
                     })
                 Spacer(modifier = Modifier.size(38.dp))
                 FANButton(
                     modifier = Modifier.size(50.dp),
-                    isSelected = state.value.motorSpeed == 2,
+                    isSelected = state.motorSpeed == 2,
                     onClick = {
-                        viewModel.motorSpeed(2)
+                        onEvent(HomeScreenIntent.MotorSpeed(2))
                     },
-                    enabled = !state.value.power && state.value.isConnected
+                    enabled = !state.power && state.isConnected
                 )
                 Spacer(modifier = Modifier.size(38.dp))
                 FANButton(
                     modifier = Modifier.size(65.dp),
-                    isSelected = state.value.motorSpeed == 3,
+                    isSelected = state.motorSpeed == 3,
                     onClick = {
-                        viewModel.motorSpeed(3)
+                        onEvent(HomeScreenIntent.MotorSpeed(3))
                     },
-                    enabled = !state.value.power && state.value.isConnected
+                    enabled = !state.power && state.isConnected
                 )
             }
         }
@@ -353,9 +347,7 @@ fun FanSpeedBox() {
 }
 
 @Composable
-fun AmbientLightBox() {
-    val viewModel = koinViewModel<HomeViewModel>()
-    val state = viewModel.state.collectAsStateWithLifecycle()
+fun AmbientLightBox(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
 
     Box(modifier = Modifier.padding(horizontal = 10.dp)) {
         // Column inside the box
@@ -391,7 +383,7 @@ fun AmbientLightBox() {
                         ) // Padding inside the box
                 ) {
                     Text(
-                        text = "${state.value.ambientLight}%",
+                        text = "${state.ambientLight}%",
                         color = PrimaryColor, // Gray text color
                         fontSize = 14.sp,
                         style = TextStyle(fontWeight = FontWeight.SemiBold)
@@ -412,13 +404,13 @@ fun AmbientLightBox() {
                 Spacer(modifier = Modifier.width(16.dp))
                 // Slider for selecting values from 0 to 100
                 Slider(
-                    enabled = !state.value.power && state.value.isConnected,
-                    value = state.value.ambientLight.toFloat(),
+                    enabled = !state.power && state.isConnected,
+                    value = state.ambientLight.toFloat(),
                     onValueChange = { newValue ->
-                        viewModel.ambientLightValue(newValue.toInt())
+                        onEvent(HomeScreenIntent.AmbientLightValue(newValue.toInt()))
                     },
                     onValueChangeFinished = {
-                        viewModel.ambientLight()
+                        onEvent(HomeScreenIntent.AMBIENTLIGHT)
                     },
                     valueRange = 0f..100f, // Range from 0 to 100
                     steps = 100, // Number of discrete steps (99 steps to get 0-100 range)
@@ -446,10 +438,8 @@ fun AmbientLightBox() {
 }
 
 @Composable
-fun UVBox() {
+fun UVBox(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
 
-    val viewModel = koinViewModel<HomeViewModel>()
-    val state = viewModel.state.collectAsStateWithLifecycle()
     Box(modifier = Modifier.padding(horizontal = 10.dp)) {
         // Column inside the box
         Row(
@@ -477,15 +467,15 @@ fun UVBox() {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // Text label next to the switch
                 Text(
-                    text = if (state.value.uv) "ON" else "OFF",
+                    text = if (state.uv) "ON" else "OFF",
                     style = MaterialTheme.typography.body1
                 )
                 // Switch component
                 Switch(
-                    enabled = !state.value.power && state.value.isConnected,
-                    checked = state.value.uv,
+                    enabled = !state.power && state.isConnected,
+                    checked = state.uv,
                     onCheckedChange = {
-                        viewModel.uvLight(it)
+                        onEvent(HomeScreenIntent.UVLight(it))
                     } // Update state when toggled
                 )
             }
@@ -494,9 +484,8 @@ fun UVBox() {
 }
 
 @Composable
-fun CartridgeLifeBox() {
-    val viewModel = koinViewModel<HomeViewModel>()
-    val state = viewModel.state.collectAsStateWithLifecycle()
+fun CartridgeLifeBox(state: ViewState) {
+
     Box(modifier = Modifier.padding(horizontal = 10.dp)) {
         // Column inside the box
         Row(
@@ -521,7 +510,7 @@ fun CartridgeLifeBox() {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text("Cartridge Life", color = Color.Black)
-                Text("${state.value.filterLife} Hrs", color = Color.Red)
+                Text("${state.filterLife} Hrs", color = Color.Red)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -548,10 +537,7 @@ fun CartridgeLifeBox() {
 }
 
 @Composable
-fun BottomButtonBox() {
-
-    val viewModel = koinViewModel<HomeViewModel>()
-    val state = viewModel.state.collectAsStateWithLifecycle()
+fun BottomButtonBox(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
 
     Box(modifier = Modifier.padding(horizontal = 10.dp)) {
         // Column inside the box
@@ -559,34 +545,34 @@ fun BottomButtonBox() {
             CircleIconButton(
                 size = 64.dp,
                 selectedColor = PrimaryColor,
-                isSelected = state.value.isLedOn,
+                isSelected = state.isLedOn,
                 drawableResource = Res.drawable.moon_solid,
                 onClick = {
-                    viewModel.indicatorLED(!state.value.isLedOn)
+                    onEvent(HomeScreenIntent.IndicatorLed(!state.isLedOn))
                 },
-                enabled = !state.value.power && state.value.isConnected
+                enabled = !state.power && state.isConnected
             )
             Spacer(modifier = Modifier.size(20.dp))
             CircleIconButton(
                 size = 78.dp,
                 selectedColor = Color.Red,
-                isSelected = state.value.power,
+                isSelected = state.power,
                 drawableResource = Res.drawable.power_off_solid,
-                enabled = state.value.isConnected,
+                enabled = state.isConnected,
                 onClick = {
-                    viewModel.power(!state.value.power)
+                    onEvent(HomeScreenIntent.Power(!state.isLedOn))
                 }
             )
             Spacer(modifier = Modifier.size(20.dp))
             CircleIconButton(
                 size = 64.dp,
                 selectedColor = PrimaryColor,
-                isSelected = state.value.echo,
+                isSelected = state.echo,
                 drawableResource = Res.drawable.leaf_solid,
                 onClick = {
-                    viewModel.echo(!state.value.echo)
+                    onEvent(HomeScreenIntent.Echo(!state.isLedOn))
                 },
-                enabled = !state.value.power && state.value.isConnected
+                enabled = !state.power && state.isConnected
             )
         }
     }
@@ -690,5 +676,13 @@ fun FANButton(
                 .width(width)
                 .height(height)
         )
+    }
+}
+
+@Preview
+@Composable
+fun HomeScreenPreview() {
+    HomeScreen(state = ViewState()) {
+
     }
 }

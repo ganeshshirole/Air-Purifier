@@ -8,7 +8,9 @@ import androidx.navigation.compose.rememberNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.kmm.airpurifier.presentation.ui.screen.HomeScreen
 import org.kmm.airpurifier.presentation.ui.screen.SecondScreen
+import org.kmm.airpurifier.presentation.ui.viewmodel.HomeViewModel
 import org.koin.compose.KoinContext
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
@@ -21,10 +23,15 @@ fun App() {
                 startDestination = "home"
             ) {
                 composable(route = "home") {
-                    HomeScreen(navController)
+                    val viewModel = koinViewModel<HomeViewModel>()
+                    HomeScreen(viewModel.state) {
+                        viewModel.handleIntent(it)
+                    }
                 }
                 composable(route = "second") {
-                    SecondScreen(navController)
+                    SecondScreen {
+                        navController.popBackStack()
+                    }
                 }
             }
         }
