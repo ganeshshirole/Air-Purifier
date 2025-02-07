@@ -77,8 +77,7 @@ fun ScanBleDeviceDialog(
 fun DialogContent(maxHeight: Dp, onItemClick: (ioTDevice: MyDevice) -> Unit) {
     val viewModel = koinViewModel<ScannerViewModel>()
     val allDevices = viewModel.stateAllDevices.collectAsState()
-//    val scannedDevices = viewModel.stateScannedDevices.collectAsState()
-//    val saveDevices = viewModel.stateSavedDevices.collectAsState()
+
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showRenameDialog by remember { mutableStateOf(false) }
 

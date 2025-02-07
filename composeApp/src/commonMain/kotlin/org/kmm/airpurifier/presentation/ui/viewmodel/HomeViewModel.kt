@@ -18,7 +18,7 @@ import org.kmm.airpurifier.domain.DataParser
 import org.kmm.airpurifier.domain.DataParser.toDisplayString
 import org.kmm.airpurifier.domain.repository.DeviceRepository
 import org.kmm.airpurifier.presentation.intent.HomeScreenIntent
-import org.kmm.airpurifier.presentation.state.ViewState
+import org.kmm.airpurifier.presentation.state.HomeScreenState
 import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_AMBIENT_LIGHT
 import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_AQI
 import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_ECHO
@@ -32,7 +32,7 @@ import org.kmm.airpurifier.util.AirPurifierUUID.SERVICE_UUID_AIR_PURIFIER
 
 class HomeViewModel(private val client: Client, private val deviceRepository: DeviceRepository) : ViewModel() {
 
-    var state by mutableStateOf(ViewState())
+    var state by mutableStateOf(HomeScreenState())
         private set
 
     private lateinit var powerCharacteristic: ClientCharacteristic
@@ -203,12 +203,12 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
         }
     }
 
-    fun ambientLightValue(percent: Int) {
+    private fun ambientLightValue(percent: Int) {
 //        _ambientLight = percent
         state = state.copy(ambientLight = percent)
     }
 
-    fun ambientLight() {
+    private fun ambientLight() {
         viewModelScope.launch {
             try {
 //                state = state.copy(ambientLight = _ambientLight)
@@ -219,7 +219,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
         }
     }
 
-    fun power(power: Boolean) {
+    private fun power(power: Boolean) {
         viewModelScope.launch {
             try {
                 state = state.copy(power = power)
@@ -230,7 +230,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
         }
     }
 
-    fun uvLight(isOn: Boolean) {
+    private fun uvLight(isOn: Boolean) {
         viewModelScope.launch {
             try {
                 state = state.copy(uv = isOn)
@@ -241,7 +241,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
         }
     }
 
-    fun indicatorLED(isOn: Boolean) {
+    private fun indicatorLED(isOn: Boolean) {
         viewModelScope.launch {
             try {
                 state = state.copy(isLedOn = isOn)
@@ -256,7 +256,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
 //        state = state.copy(motorSpeed = speed)
 //    }
 
-    fun motorSpeed(speed: Int) {
+    private fun motorSpeed(speed: Int) {
         viewModelScope.launch {
             try {
 //                echoValueBasedOnMotorSpeed(speed)
@@ -268,7 +268,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
         }
     }
 
-    fun echo(isEchoOn: Boolean) {
+    private fun echo(isEchoOn: Boolean) {
         viewModelScope.launch {
             try {
 //                motorSpeedBasedOnEcho(isEchoOn)
@@ -280,7 +280,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
         }
     }
 
-    fun errorState(hasError: Boolean) {
+    private fun errorState(hasError: Boolean) {
         viewModelScope.launch {
             try {
                 state = state.copy(error = hasError)

@@ -77,14 +77,14 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.kmm.airpurifier.presentation.intent.HomeScreenIntent
-import org.kmm.airpurifier.presentation.state.ViewState
+import org.kmm.airpurifier.presentation.state.HomeScreenState
 import org.kmm.airpurifier.util.OstrichSansFontFamily
 import org.kmm.airpurifier.util.PrimaryColor
 import org.kmm.airpurifier.util.RobotoFontFamily
 import org.kmm.airpurifier.util.SecondaryColor
 
 @Composable
-fun HomeScreen(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
+fun HomeScreen(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
 
     LaunchedEffect(Unit) {
         onEvent(HomeScreenIntent.CONNECT)
@@ -227,7 +227,7 @@ fun BlinkingIcon(isConnected: Boolean) {
 
 @Composable
 fun AQICircularButton(
-    state: ViewState,
+    state: HomeScreenState,
     smallScreen: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -285,7 +285,7 @@ fun AQICircularButton(
 }
 
 @Composable
-fun FanSpeedBox(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
+fun FanSpeedBox(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
 
     Box(modifier = Modifier.padding(horizontal = 10.dp), contentAlignment = Alignment.Center) {
         Image(
@@ -347,7 +347,7 @@ fun FanSpeedBox(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
 }
 
 @Composable
-fun AmbientLightBox(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
+fun AmbientLightBox(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
 
     Box(modifier = Modifier.padding(horizontal = 10.dp)) {
         // Column inside the box
@@ -438,7 +438,7 @@ fun AmbientLightBox(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
 }
 
 @Composable
-fun UVBox(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
+fun UVBox(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
 
     Box(modifier = Modifier.padding(horizontal = 10.dp)) {
         // Column inside the box
@@ -484,7 +484,7 @@ fun UVBox(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
 }
 
 @Composable
-fun CartridgeLifeBox(state: ViewState) {
+fun CartridgeLifeBox(state: HomeScreenState) {
 
     Box(modifier = Modifier.padding(horizontal = 10.dp)) {
         // Column inside the box
@@ -537,7 +537,7 @@ fun CartridgeLifeBox(state: ViewState) {
 }
 
 @Composable
-fun BottomButtonBox(state: ViewState, onEvent: (HomeScreenIntent) -> Unit) {
+fun BottomButtonBox(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
 
     Box(modifier = Modifier.padding(horizontal = 10.dp)) {
         // Column inside the box
@@ -682,7 +682,7 @@ fun FANButton(
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(state = ViewState()) {
+    HomeScreen(state = HomeScreenState()) {
 
     }
 }

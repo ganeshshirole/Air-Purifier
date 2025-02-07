@@ -1,6 +1,6 @@
 package org.kmm.airpurifier.presentation.state
 
-data class ViewState(
+data class HomeScreenState(
     val isConnected: Boolean = false,
     val aiq: Int = 0,
     val motorSpeed: Int = 0,
