@@ -35,16 +35,16 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            implementation(libs.androidx.compose.material.iconsExtended)
+
+            implementation(libs.nordic.permissions.internet)
             implementation(libs.nordic.blek.scanner)
             implementation(libs.nordic.blek.client)
-            implementation(libs.nordic.blek.advertiser)
-            implementation(libs.nordic.blek.server)
-            implementation(libs.nordic.blek.core)
-            implementation(libs.nordic.permissions.internet)
-            implementation(libs.androidx.compose.material.iconsExtended)
+//            implementation(libs.nordic.blek.advertiser)
+//            implementation(libs.nordic.blek.server)
+//            implementation(libs.nordic.blek.core)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

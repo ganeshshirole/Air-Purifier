@@ -38,6 +38,4 @@ import org.koin.dsl.module
 internal val scannerModule: Module = module {
     single { BleFactory.provideScanner() }
     single { BleFactory.provideClient() }
-    single { BleFactory.provideAdvertiser() }
-    single { BleFactory.provideServer() }
 }
