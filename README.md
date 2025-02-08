@@ -12,6 +12,7 @@ This Air Purifier app delivers a seamless experience for both Android and iOS us
 - **Compose Multiplatform UI**: To share UI code across Android and iOS platforms.
 - **Datetime API**: DB datetime code across Android and iOS platforms.
 - **Custom Fonts**: Used custom fonts across Android and iOS platforms.
+- **Napier-Logging Library**: Napier is a lightweight logging library for Kotlin Multiplatform (KMP) that works on Android, iOS, and other platforms. It's similar to Timber but designed for KMP.
 
 ---
 
