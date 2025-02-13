@@ -16,9 +16,9 @@ compose-multiplatform = "1.7.3"
 junit = "4.13.2"
 kotlin = "2.1.0"
 
-room = "2.7.0-alpha13"
+room = "2.7.0-beta01"
 ksp = "2.1.0-1.0.29"
-sqlite = "2.5.0-alpha13"
+sqlite = "2.5.0-beta01"
 datastore = "1.1.2"
 
 koin = "4.0.0"
