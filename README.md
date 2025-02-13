@@ -44,7 +44,7 @@ This folder contains the entry point for the iOS application. Even when sharing 
 ---
 
 ### Home Screen
-![Home Screen](docs/HomeScreen1.png)
+<img src="docs/HomeScreen1.png" width="300">
 
 ---
 
