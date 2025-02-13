@@ -43,6 +43,11 @@ This folder contains the entry point for the iOS application. Even when sharing 
 
 ---
 
+### Home Screen
+![Home Screen](docs/home_screen.png)
+
+---
+
 ## How to Run the Project
 
 ### Prerequisites

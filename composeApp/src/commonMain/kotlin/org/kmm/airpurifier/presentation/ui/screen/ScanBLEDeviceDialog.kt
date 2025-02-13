@@ -44,6 +44,7 @@ import org.kmm.airpurifier.RequestPermissions
 import org.kmm.airpurifier.presentation.ui.component.LoopAnimation
 import org.kmm.airpurifier.presentation.ui.viewmodel.ScannerViewModel
 import org.kmm.airpurifier.domain.model.MyDevice
+import org.kmm.airpurifier.util.AccentColor
 import org.kmm.airpurifier.util.SecondaryColor
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -112,7 +113,7 @@ fun DialogContent(maxHeight: Dp, onItemClick: (ioTDevice: MyDevice) -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.Red,
+                backgroundColor = AccentColor,
             ),
             onClick = { /* Handle click */ },
             modifier = Modifier
@@ -295,7 +296,7 @@ fun ListWithDividers(
 //                                    expandedIndex = -1
 //                                    onDelete(myDevice)
 //                                },
-//                                backgroundColor = Color.Red,
+//                                backgroundColor = AccentColor,
 //                                iconVector = Icons.Default.Delete,
 //                                modifier = Modifier.fillMaxHeight()
 //                            )

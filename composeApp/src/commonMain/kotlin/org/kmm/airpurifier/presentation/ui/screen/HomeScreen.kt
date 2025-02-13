@@ -78,6 +78,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.kmm.airpurifier.presentation.intent.HomeScreenIntent
 import org.kmm.airpurifier.presentation.state.HomeScreenState
+import org.kmm.airpurifier.util.AccentColor
 import org.kmm.airpurifier.util.OstrichSansFontFamily
 import org.kmm.airpurifier.util.PrimaryColor
 import org.kmm.airpurifier.util.RobotoFontFamily
@@ -418,9 +419,9 @@ fun AmbientLightBox(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit)
                     // Custom color combination for the slider
                     colors = SliderDefaults.colors(
                         thumbColor = PrimaryColor, // Thumb (handle) color
-                        activeTrackColor = Color.Red, // Active track (progressed part) color
+                        activeTrackColor = AccentColor, // Active track (progressed part) color
                         inactiveTrackColor = Color.Gray, // Inactive track color
-                        activeTickColor = Color.Red, // Active tick color
+                        activeTickColor = AccentColor, // Active tick color
                         inactiveTickColor = Color.LightGray // Inactive tick color
                     )
 
@@ -510,7 +511,7 @@ fun CartridgeLifeBox(state: HomeScreenState) {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text("Cartridge Life", color = Color.Black)
-                Text("${state.filterLife} Hrs", color = Color.Red)
+                Text("${state.filterLife} Hrs", color = AccentColor)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -555,7 +556,7 @@ fun BottomButtonBox(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit)
             Spacer(modifier = Modifier.size(20.dp))
             CircleIconButton(
                 size = 78.dp,
-                selectedColor = Color.Red,
+                selectedColor = AccentColor,
                 isSelected = state.power,
                 drawableResource = Res.drawable.power_off_solid,
                 enabled = state.isConnected,
@@ -581,7 +582,7 @@ fun BottomButtonBox(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit)
 @Composable
 fun CircleIconButton(
     size: Dp = 60.dp,
-    selectedColor: Color = Color.Red,
+    selectedColor: Color = AccentColor,
     isSelected: Boolean,
     drawableResource: DrawableResource,
     onClick: () -> Unit,
@@ -635,7 +636,7 @@ fun FANButton(
             .border(
                 BorderStroke(
                     6.dp, if (isSelected && enabled) {
-                        Color.Red
+                        AccentColor
                     } else {
                         Color.LightGray
                     }
