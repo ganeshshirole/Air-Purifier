@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.kmm.airpurifier.ble.scanner.IoTDevice
 import org.kmm.airpurifier.ble.scanner.PeripheralDevice
 import platform.CoreBluetooth.CBAdvertisementDataServiceUUIDsKey
@@ -18,26 +19,20 @@ import platform.CoreBluetooth.CBCentralManager
 import platform.CoreBluetooth.CBCentralManagerDelegateProtocol
 import platform.CoreBluetooth.CBCentralManagerStatePoweredOn
 import platform.CoreBluetooth.CBCharacteristic
-import platform.CoreBluetooth.CBDescriptor
 import platform.CoreBluetooth.CBManagerState
 import platform.CoreBluetooth.CBManagerStateUnknown
 import platform.CoreBluetooth.CBPeripheral
 import platform.CoreBluetooth.CBPeripheralDelegateProtocol
 import platform.CoreBluetooth.CBPeripheralStateConnected
 import platform.CoreBluetooth.CBService
-import platform.Foundation.NSData
 import platform.Foundation.NSError
 import platform.Foundation.NSNumber
+import platform.Foundation.NSUUID
 import platform.darwin.NSObject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import com.benasher44.uuid.Uuid
-import com.benasher44.uuid.uuidFrom
-import platform.CoreBluetooth.CBUUID
-import platform.Foundation.NSUUID
 
 private const val TAG = "BLE-TAG"
-//private val BLINKY_SERVICE_UUID = uuidFrom("00001523-1212-efde-1523-785feabcd123")
 
 class IOSClient : NSObject(), CBCentralManagerDelegateProtocol, CBPeripheralDelegateProtocol {
 
@@ -51,14 +46,14 @@ class IOSClient : NSObject(), CBCentralManagerDelegateProtocol, CBPeripheralDele
 
     private var services: ClientServices? = null
 
-    private val _scannedDevices = MutableStateFlow<List<IoTDevice>>(emptyList())
-    val scannedDevices = _scannedDevices.asStateFlow()
+    private val _connectionState = MutableStateFlow(false) // Holds connection state
+    private val connectionState: StateFlow<Boolean> = _connectionState.asStateFlow()
 
-    private val _connectionStatus = MutableStateFlow<Boolean>(false)
-    val connectionStatus = _connectionStatus.asStateFlow()
+    private val _scannedDevices = MutableStateFlow<List<IoTDevice>>(emptyList())
+    private val scannedDevices = _scannedDevices.asStateFlow()
 
     private val _bleState = MutableStateFlow(CBManagerStateUnknown)
-    val bleState: StateFlow<CBManagerState> = _bleState.asStateFlow()
+    private val bleState: StateFlow<CBManagerState> = _bleState.asStateFlow()
 
     private fun onEvent(event: IOSGattEvent) {
         services?.onEvent(event)
@@ -88,68 +83,51 @@ class IOSClient : NSObject(), CBCentralManagerDelegateProtocol, CBPeripheralDele
         return peripheral.state == CBPeripheralStateConnected
     }
 
-    suspend fun connect(device: IoTDevice) {
-        manager.stopScan()
-        peripheral = (device.device as PeripheralDevice).peripheral
-        peripheral.delegate = this
-        Napier.i("Connect", tag = TAG)
-        bleState.first { it == CBCentralManagerStatePoweredOn }
-        return suspendCoroutine { continuation ->
-            onDeviceConnected = {
-                onDeviceConnected = null
-                continuation.resume(Unit)
-            }
-            Napier.i("Connect peripheral", tag = TAG)
-            manager.connectPeripheral(peripheral, null)
-        }
-    }
+//    suspend fun connect(device: IoTDevice) {
+//        manager.stopScan()
+//        peripheral = (device.device as PeripheralDevice).peripheral
+//        peripheral.delegate = this
+//        Napier.i("Connect", tag = TAG)
+//        bleState.first { it == CBCentralManagerStatePoweredOn }
+//        return suspendCoroutine { continuation ->
+//            onDeviceConnected = {
+//                onDeviceConnected = null
+//                continuation.resume(Unit)
+//            }
+//            Napier.i("Connect peripheral", tag = TAG)
+//            manager.connectPeripheral(peripheral, null)
+//        }
+//    }
 
-    suspend fun connect(uuid: String) {
-        manager.stopScan()
+    fun connect(uuid: String): Flow<Boolean> = callbackFlow {
         bleState.first { it == CBCentralManagerStatePoweredOn }
-        if(manager.state == CBCentralManagerStatePoweredOn) {
+        if (manager.state == CBCentralManagerStatePoweredOn) {
             peripheral = manager.retrievePeripheralsWithIdentifiers(listOf(NSUUID(uuid)))
                 .firstOrNull() as? CBPeripheral
                 ?: throw IllegalStateException("Peripheral not found for UUID: $uuid")
-            peripheral.delegate = this
+            peripheral.delegate = this@IOSClient
             Napier.i("Connect", tag = TAG)
         } else {
             throw IllegalStateException("CBCentralManager State Powered No On: ${manager.state}")
         }
 
-        return suspendCoroutine { continuation ->
-            onDeviceConnected = {
-                onDeviceConnected = null
-                continuation.resume(Unit)
-            }
-            Napier.i("Connect peripheral", tag = TAG)
-            manager.connectPeripheral(peripheral, null)
+        Napier.i("Connect peripheral", tag = TAG)
+        manager.connectPeripheral(peripheral, null)
+
+        val job = launch {
+            connectionState.collect { trySend(it) }
+        }
+
+        awaitClose {
+            job.cancel()
+            disconnect()
         }
     }
 
-    suspend fun disconnect() {
-        return suspendCoroutine { continuation ->
-            onDeviceDisconnected = {
-                onDeviceDisconnected = null
-                continuation.resume(Unit)
-            }
-            manager.cancelPeripheralConnection(peripheral)
-        }
+    fun disconnect() {
+        manager.cancelPeripheralConnection(peripheral)
     }
 
-//    fun connectionStatus() : Flow<Boolean> {
-//        return callbackFlow {
-//            bleState.first { it == CBCentralManagerStatePoweredOn }
-//
-//            connectionStatus.onEach {
-//                trySend(it)
-//            }.launchIn(this)
-//
-//            awaitClose {
-//                // nothing
-//            }
-//        }
-//    }
 
     suspend fun discoverServices(): ClientServices {
         Napier.i("Discover services", tag = TAG)
@@ -217,13 +195,13 @@ class IOSClient : NSObject(), CBCentralManagerDelegateProtocol, CBPeripheralDele
         error: NSError?,
     ) {
         Napier.i("didFailToConnectPeripheral", tag = TAG)
-        _connectionStatus.value = false
+        _connectionState.value = false
         onDeviceConnected?.invoke(DeviceDisconnected)
     }
 
     override fun centralManager(central: CBCentralManager, didConnectPeripheral: CBPeripheral) {
         Napier.i("didConnectPeripheral", tag = TAG)
-        _connectionStatus.value = true
+        _connectionState.value = true
         onDeviceConnected?.invoke(DeviceConnected)
     }
 
@@ -234,7 +212,7 @@ class IOSClient : NSObject(), CBCentralManagerDelegateProtocol, CBPeripheralDele
         error: NSError?,
     ) {
         Napier.i("didDisconnectPeripheral", tag = TAG)
-        _connectionStatus.value = false
+        _connectionState.value = false
         onDeviceDisconnected?.invoke()
     }
 
@@ -268,36 +246,6 @@ class IOSClient : NSObject(), CBCentralManagerDelegateProtocol, CBPeripheralDele
         )
     }
 
-    @ObjCSignatureOverride
-    override fun peripheral(
-        peripheral: CBPeripheral,
-        didWriteValueForDescriptor: CBDescriptor,
-        error: NSError?,
-    ) {
-        onEvent(
-            OnGattDescriptorWrite(
-                peripheral,
-                didWriteValueForDescriptor.value as NSData?,
-                error
-            )
-        )
-    }
-
-    @ObjCSignatureOverride
-    override fun peripheral(
-        peripheral: CBPeripheral,
-        didUpdateValueForDescriptor: CBDescriptor,
-        error: NSError?,
-    ) {
-        onEvent(
-            OnGattDescriptorRead(
-                peripheral,
-                didUpdateValueForDescriptor.value as NSData?,
-                error
-            )
-        )
-    }
-
     override fun centralManager(
         central: CBCentralManager,
         didDiscoverPeripheral: CBPeripheral,
@@ -306,16 +254,6 @@ class IOSClient : NSObject(), CBCentralManagerDelegateProtocol, CBPeripheralDele
     ) {
         val ioTDevice = IoTDevice(PeripheralDevice(didDiscoverPeripheral))
         Napier.d { "${advertisementData[CBAdvertisementDataServiceUUIDsKey]}" }
-//        val uuid = try {
-//            (advertisementData[CBAdvertisementDataServiceUUIDsKey] as? List<CBUUID>)?.first()
-//                ?.toUuid()
-//        } catch (e: Exception) {
-//            null
-//        }
-//        Napier.d { "Uuid: $uuid" }
-//        if (uuid != BLINKY_SERVICE_UUID) {
-//            return
-//        }
         _scannedDevices.value += ioTDevice
     }
 

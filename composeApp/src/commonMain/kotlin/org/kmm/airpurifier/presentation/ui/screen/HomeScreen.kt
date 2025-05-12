@@ -88,7 +88,7 @@ import org.kmm.airpurifier.util.SecondaryColor
 fun HomeScreen(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
 
     LaunchedEffect(Unit) {
-        onEvent(HomeScreenIntent.CONNECT)
+        onEvent(HomeScreenIntent.Connect)
     }
 
     Scaffold(
@@ -190,7 +190,7 @@ fun HomeScreen(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
                     maxHeight
                 ) {
                     onEvent(HomeScreenIntent.ShowDialog(false))
-                    onEvent(HomeScreenIntent.CONNECT)
+                    onEvent(HomeScreenIntent.Connect)
                 }
             }
         }
@@ -411,7 +411,7 @@ fun AmbientLightBox(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit)
                         onEvent(HomeScreenIntent.AmbientLightValue(newValue.toInt()))
                     },
                     onValueChangeFinished = {
-                        onEvent(HomeScreenIntent.AMBIENTLIGHT)
+                        onEvent(HomeScreenIntent.AmbientLight)
                     },
                     valueRange = 0f..100f, // Range from 0 to 100
                     steps = 100, // Number of discrete steps (99 steps to get 0-100 range)

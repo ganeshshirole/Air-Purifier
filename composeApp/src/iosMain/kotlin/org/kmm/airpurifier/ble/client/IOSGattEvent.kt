@@ -19,17 +19,3 @@ internal data class OnGattCharacteristicRead(
     val data: NSData?,
     val error: NSError?
 ) : CharacteristicEvent
-
-internal sealed interface DescriptorEvent : CharacteristicEvent
-
-internal data class OnGattDescriptorWrite(
-    val peripheral: CBPeripheral,
-    val data: NSData?,
-    val error: NSError?
-) : DescriptorEvent
-
-internal data class OnGattDescriptorRead(
-    val peripheral: CBPeripheral,
-    val data: NSData?,
-    val error: NSError?
-) : DescriptorEvent

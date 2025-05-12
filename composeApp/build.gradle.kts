@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.composeCompiler)
 
     alias(libs.plugins.ksp)
@@ -37,14 +37,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
-            implementation(libs.androidx.compose.material.iconsExtended)
-
             implementation(libs.nordic.permissions.internet)
-            implementation(libs.nordic.blek.scanner)
-            implementation(libs.nordic.blek.client)
-//            implementation(libs.nordic.blek.advertiser)
-//            implementation(libs.nordic.blek.server)
-//            implementation(libs.nordic.blek.core)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -54,13 +47,9 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.material.icons.core)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
-            api(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
-            implementation(libs.lifecycle.viewmodel)
-            implementation(libs.navigation.compose)
             implementation(libs.kmm.uuid)
             implementation(libs.kmm.logs)
 
@@ -71,6 +60,8 @@ kotlin {
             api(libs.datastore)
 
             implementation(libs.kotlinx.datetime)
+
+            implementation(libs.koin.compose.viewmodel.nav)
         }
     }
 }

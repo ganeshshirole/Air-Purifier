@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import platform.CoreBluetooth.CBCharacteristic
 import platform.CoreBluetooth.CBCharacteristicWriteWithResponse
 import platform.CoreBluetooth.CBCharacteristicWriteWithoutResponse
-import platform.CoreBluetooth.CBDescriptor
 import platform.CoreBluetooth.CBPeripheral
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -23,21 +22,12 @@ actual class ClientCharacteristic(
     private var onCharacteristicWrite: ((OnGattCharacteristicWrite) -> Unit)? = null
     private var onCharacteristicRead: ((OnGattCharacteristicRead) -> Unit)? = null
 
-    private val descriptors = native.descriptors
-        ?.map { it as CBDescriptor }
-        ?.map { ClientDescriptor(peripheral, it) }
-        ?: emptyList()
 
     internal fun onEvent(event: CharacteristicEvent) {
         when (event) {
             is OnGattCharacteristicRead -> onCharacteristicRead?.invoke(event)
             is OnGattCharacteristicWrite -> onCharacteristicWrite?.invoke(event)
-            is DescriptorEvent -> descriptors.onEach { it.onEvent(event) }
         }
-    }
-
-    actual fun findDescriptor(uuid: Uuid): ClientDescriptor? {
-        return descriptors.firstOrNull { it.uuid == uuid }
     }
 
     actual suspend fun getNotifications(): Flow<ByteArray> {
