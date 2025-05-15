@@ -16,8 +16,10 @@ junit = "4.13.2"
 kotlin = "2.1.20"
 koin = "4.1.0-Beta11"
 
+kotlinxCoroutinesTest = "1.8.0"
 ksp = "2.1.20-1.0.31"
 materialIconsCore = "1.7.3"
+mockk = "1.14.2"
 room = "2.7.1"
 sqlite = "2.5.1"
 datastore = "1.1.6"
@@ -43,10 +45,12 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "materialIconsCore" }
 kmm-logs = { group = "io.github.aakira", name = "napier", version.ref = "kmmLogs" }
 kmm-uuid = { group = "com.benasher44", name = "uuid", version.ref = "kmmUuid" }
 
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 nordic-permissions-internet = { group = "no.nordicsemi.android.common", name = "permissions-internet", version.ref = "nordic-common" }
 
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
