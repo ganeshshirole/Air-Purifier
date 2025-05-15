@@ -5,6 +5,7 @@ This Air Purifier app delivers a seamless experience for both Android and iOS us
 
 - **BLE (Bluetooth Low Energy)**: For connecting and communicating with the air purifier device.
 - **Koin**: Dependency injection framework.
+- **Ktor**: Networking library for Android and iOS.
 - **ViewModel**: For managing UI-related data.
 - **Room Database**: For local data storage.
 - **Flow**: For asynchronous data streams.
@@ -13,6 +14,7 @@ This Air Purifier app delivers a seamless experience for both Android and iOS us
 - **Datetime API**: DB datetime code across Android and iOS platforms.
 - **Custom Fonts**: Used custom fonts across Android and iOS platforms.
 - **Napier-Logging Library**: Napier is a lightweight logging library for Kotlin Multiplatform (KMP) that works on Android, iOS, and other platforms. It's similar to Timber but designed for KMP.
+- **Kotlin Test**: Unit Tests.
 
 ---
 
