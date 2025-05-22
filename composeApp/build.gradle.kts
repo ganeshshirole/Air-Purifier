@@ -54,6 +54,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.material.icons.core)
+            implementation(libs.material3)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
             implementation(libs.kmm.uuid)

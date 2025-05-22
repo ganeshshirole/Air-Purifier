@@ -43,17 +43,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Slider
-import androidx.compose.material.SliderDefaults
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -84,6 +86,7 @@ import org.kmm.airpurifier.util.PrimaryColor
 import org.kmm.airpurifier.util.RobotoFontFamily
 import org.kmm.airpurifier.util.SecondaryColor
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
 
@@ -93,7 +96,7 @@ fun HomeScreen(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 modifier = Modifier
                     .padding(horizontal = 14.dp, vertical = 8.dp)
                     .border(
@@ -102,25 +105,27 @@ fun HomeScreen(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
                         shape = RoundedCornerShape(11.dp)
                     )
                     .height(50.dp),
-                elevation = 0.dp,
-                backgroundColor = Color.Transparent,
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent,
+                    titleContentColor = Color.Black,
+                    navigationIconContentColor = Color.Black,
+                    actionIconContentColor = Color.Black
+                ),
+                scrollBehavior = null,
                 title = {
-                    // Centered Title
-                    Box(modifier = Modifier.fillMaxWidth()) {
+                    Box(modifier = Modifier.fillMaxSize()) {
                         Text(
+                            modifier = Modifier.align(Alignment.Center),
                             text = if (state.isConnected) "Connected" else "Disconnected",
                             fontWeight = FontWeight.Light,
                             fontSize = 18.sp,
                             fontFamily = RobotoFontFamily(),
                             color = Color.DarkGray,
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(end = 16.dp)
                         )
                     }
                 },
                 navigationIcon = {
-                    // Left Burger Icon
                     IconButton(onClick = { onEvent(HomeScreenIntent.ShowDialog(true)) }) {
                         Icon(
                             imageVector = Icons.Default.Search,
@@ -131,7 +136,6 @@ fun HomeScreen(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
                     }
                 },
                 actions = {
-                    // Right Bluetooth Icon
                     IconButton(onClick = { /* Handle Bluetooth action */ }) {
                         BlinkingIcon(isConnected = state.isConnected)
                     }
@@ -318,7 +322,8 @@ fun FanSpeedBox(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
                 modifier = Modifier.fillMaxWidth()
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                FANButton(modifier = Modifier.size(40.dp),
+                FANButton(
+                    modifier = Modifier.size(40.dp),
                     enabled = !state.power && state.isConnected,
                     isSelected = state.motorSpeed == 1,
                     onClick = {
@@ -469,8 +474,9 @@ fun UVBox(state: HomeScreenState, onEvent: (HomeScreenIntent) -> Unit) {
                 // Text label next to the switch
                 Text(
                     text = if (state.uv) "ON" else "OFF",
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.bodyMedium
                 )
+                Spacer(modifier = Modifier.width(8.dp))
                 // Switch component
                 Switch(
                     enabled = !state.power && state.isConnected,

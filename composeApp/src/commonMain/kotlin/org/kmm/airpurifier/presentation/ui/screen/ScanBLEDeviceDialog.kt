@@ -13,22 +13,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,7 +62,8 @@ fun ScanBleDeviceDialog(
             Surface(
                 shape = RoundedCornerShape(16.dp),
                 color = Color.White,
-                elevation = 0.dp
+                tonalElevation = 0.dp,
+                shadowElevation = 0.dp,
             ) {
                 RequestPermissions {
                     DialogContent(maxHeight) {
@@ -117,7 +117,7 @@ fun DialogContent(maxHeight: Dp, onItemClick: (ioTDevice: MyDevice) -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = AccentColor,
+                containerColor = AccentColor,
             ),
             onClick = {
                 viewModel.stopScan()
@@ -256,10 +256,11 @@ fun ListWithDividers(
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         items(items.size) { index ->
             val myDevice = items[index]
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clickable { onItemClick(items[index]) }) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clickable { onItemClick(items[index]) }) {
 
                 myDevice.title?.let {
                     Text(
