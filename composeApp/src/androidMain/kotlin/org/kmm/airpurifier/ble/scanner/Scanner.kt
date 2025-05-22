@@ -1,6 +1,8 @@
 package org.kmm.airpurifier.ble.scanner
 
+import android.Manifest
 import android.content.Context
+import androidx.annotation.RequiresPermission
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -17,5 +19,10 @@ actual class Scanner(private val client: AndroidClient) {
             .onEach { result += it }
             .map { result }
             .map { it.distinctBy { device -> device.address } }
+    }
+
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
+    actual fun stopScan() {
+        client.stopScan()
     }
 }

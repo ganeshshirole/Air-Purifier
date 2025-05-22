@@ -60,7 +60,7 @@ class IOSClient : NSObject(), CBCentralManagerDelegateProtocol, CBPeripheralDele
     }
 
     fun scan(): Flow<List<IoTDevice>> {
-        Napier.d { "Start Scam" }
+        Napier.d { "Start Scan" }
         return callbackFlow {
             bleState.first { it == CBCentralManagerStatePoweredOn }
             manager.scanForPeripheralsWithServices(null, null)
@@ -73,10 +73,15 @@ class IOSClient : NSObject(), CBCentralManagerDelegateProtocol, CBPeripheralDele
             }.launchIn(this)
 
             awaitClose {
-                Napier.d { "Stop Scam" }
+                Napier.d { "Stop Scan" }
                 manager.stopScan()
             }
         }
+    }
+
+    fun stopScan() {
+        Napier.d { "Stop Scan" }
+        manager.stopScan()
     }
 
     fun isConnected(): Boolean {

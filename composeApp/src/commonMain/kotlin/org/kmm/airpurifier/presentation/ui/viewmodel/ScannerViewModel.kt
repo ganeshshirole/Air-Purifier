@@ -2,8 +2,10 @@ package org.kmm.airpurifier.presentation.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -11,7 +13,10 @@ import org.kmm.airpurifier.ble.scanner.Scanner
 import org.kmm.airpurifier.domain.repository.DeviceRepository
 import org.kmm.airpurifier.domain.model.MyDevice
 
-class ScannerViewModel(private val scanner: Scanner, private val deviceRepository: DeviceRepository) : ViewModel() {
+class ScannerViewModel(
+    private val scanner: Scanner,
+    private val deviceRepository: DeviceRepository
+) : ViewModel() {
     var selectedIoTDevice: MyDevice? = null
 
     private val _stateAllDevices = MutableStateFlow(emptyList<MyDevice>())
@@ -31,17 +36,19 @@ class ScannerViewModel(private val scanner: Scanner, private val deviceRepositor
     }
 
     fun scan() {
-        deviceRepository.getAllBLEDevice().onEach { devices ->
-            _stateSavedDevices = devices.mapIndexed { index, it ->
-                MyDevice(
-                    it.name,
-                    it.address,
-                    isSavedDevice = true,
-                    title = if (index == 0) "Saved Devices" else null
-                )
+        viewModelScope.launch {
+            deviceRepository.getAllBLEDevice().onEach { devices ->
+                _stateSavedDevices = devices.mapIndexed { index, it ->
+                    MyDevice(
+                        it.name,
+                        it.address,
+                        isSavedDevice = true,
+                        title = if (index == 0) "Saved Devices" else null
+                    )
+                }
+                updateCombinedDevices()
             }
-            updateCombinedDevices()
-        }.launchIn(viewModelScope)
+        }
 
         scanner.scan()
             .onEach { devices ->
@@ -54,7 +61,9 @@ class ScannerViewModel(private val scanner: Scanner, private val deviceRepositor
                     }).distinctBy { ioTDevice -> ioTDevice.address }
 
                 updateCombinedDevices()
-            }.launchIn(viewModelScope)
+            }
+            .flowOn(Dispatchers.Default)
+            .launchIn(viewModelScope)
     }
 
     fun deleteDevice(address: String) {
@@ -67,6 +76,10 @@ class ScannerViewModel(private val scanner: Scanner, private val deviceRepositor
         viewModelScope.launch {
             deviceRepository.updateDeviceNameByAddress(address, newName)
         }
+    }
+
+    fun stopScan() {
+        scanner.stopScan()
     }
 
     companion object {

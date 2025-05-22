@@ -1,5 +1,6 @@
 package org.kmm.airpurifier.ble.client
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -15,6 +16,7 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.os.ParcelUuid
+import androidx.annotation.RequiresPermission
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +39,7 @@ class AndroidClient(private val context: Context) {
     private var discoverServicesContinuation: Continuation<ClientServices>? = null
 
     private var services: ClientServices? = null
+    private var scanCallback: ScanCallback? = null
 
     private fun onEvent(event: AndroidGattEvent) {
         services?.onEvent(event)
@@ -44,7 +47,7 @@ class AndroidClient(private val context: Context) {
 
     @SuppressLint("MissingPermission")
     fun scan(serviceUuid: ParcelUuid? = null): Flow<BluetoothDevice> = callbackFlow {
-        val scanCallback = object : ScanCallback() {
+        scanCallback = object : ScanCallback() {
             override fun onScanResult(callbackType: Int, result: ScanResult) {
                 trySend(result.device)
             }
@@ -69,6 +72,11 @@ class AndroidClient(private val context: Context) {
         awaitClose {
             bleScanner.stopScan(scanCallback)
         }
+    }
+
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
+    fun stopScan() {
+        bleScanner.stopScan(scanCallback)
     }
 
     @SuppressLint("MissingPermission")

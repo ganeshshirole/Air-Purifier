@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -82,8 +83,11 @@ fun DialogContent(maxHeight: Dp, onItemClick: (ioTDevice: MyDevice) -> Unit) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showRenameDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    DisposableEffect(Unit) {
         viewModel.scan()
+        onDispose {
+            viewModel.stopScan()
+        }
     }
 
     Column(
@@ -115,7 +119,10 @@ fun DialogContent(maxHeight: Dp, onItemClick: (ioTDevice: MyDevice) -> Unit) {
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = AccentColor,
             ),
-            onClick = { /* Handle click */ },
+            onClick = {
+                viewModel.stopScan()
+                viewModel.scan()
+            },
             modifier = Modifier
                 .width(200.dp)
         ) {
