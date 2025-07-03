@@ -9,7 +9,6 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import org.kmm.airpurifier.ble.client.Client
 import org.kmm.airpurifier.ble.client.ClientCharacteristic
 import org.kmm.airpurifier.ble.client.ClientService
@@ -29,6 +28,8 @@ import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_MOTOR_SPEED
 import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_POWER
 import org.kmm.airpurifier.util.AirPurifierUUID.CHAR_UUID_UV_LIGHT
 import org.kmm.airpurifier.util.AirPurifierUUID.SERVICE_UUID_AIR_PURIFIER
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 class HomeViewModel(private val client: Client, private val deviceRepository: DeviceRepository) :
     ViewModel() {
@@ -80,12 +81,12 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
             if (address == null) return@launch
             try {
 
-                client.connect(address!!).collect { isConnected ->
+                client.connect(address).collect { isConnected ->
                     Napier.i("BLE Connection $isConnected", tag = TAG)
                     if (isConnected) {
                         state = state.copy(isConnected = isConnected)
                         if (isConnected) {
-                            deviceConnected(name!!, address!!)
+                            deviceConnected(name!!, address)
                         }
                     }
                 }
@@ -95,13 +96,14 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     private suspend fun deviceConnected(name: String, address: String) {
         val timestamp =
             Clock.System.now().toEpochMilliseconds()
         deviceRepository.insertWithLimit(
             BLEDevice(
-                name!!,
-                address!!,
+                name,
+                address,
                 timestamp
             )
         )

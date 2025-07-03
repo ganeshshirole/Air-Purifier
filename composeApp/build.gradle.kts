@@ -39,7 +39,9 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
 
-            implementation(libs.ktor.client.okhttp)
+            implementation(libs.ktor.client.okhttp.get().toString()) {
+                exclude(group = "io.ktor", module = "ktor-client-core-jvm")
+            }
         }
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -69,6 +71,9 @@ kotlin {
             implementation(libs.koin.compose.viewmodel.nav)
 
             implementation(libs.bundles.ktor)
+
+            implementation(libs.kmqtt.common)
+            implementation(libs.kmqtt.client)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
