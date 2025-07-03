@@ -4,11 +4,13 @@
 This Air Purifier app delivers a seamless experience for both Android and iOS users. Built using Kotlin Multiplatform Mobile (KMM), it leverages the following technologies and tools:
 
 - **BLE (Bluetooth Low Energy)**: For connecting and communicating with the air purifier device.
-- **Koin**: Dependency injection framework.
+- **Koin**: Dependency injection framework for Android and iOS..
 - **Ktor**: Networking library for Android and iOS.
-- **ViewModel**: For managing UI-related data.
-- **Room Database**: For local data storage.
-- **Flow**: For asynchronous data streams.
+- **MQTT**: Networking library to M2M communication for Android and iOS.
+- **ViewModel**: For managing UI-related data for Android and iOS.
+- **Room Database**: For local data storage for Android and iOS.
+- **DataStore**: To store user preferences/settings for Android and iOS.
+- **Flow**: For asynchronous data streams for Android and iOS.
 - **Actual/Expect**: To handle platform-specific implementations in Kotlin.
 - **Compose Multiplatform UI**: To share UI code across Android and iOS platforms.
 - **Datetime API**: DB datetime code across Android and iOS platforms.
