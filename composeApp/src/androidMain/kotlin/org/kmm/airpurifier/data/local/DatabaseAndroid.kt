@@ -1,6 +1,5 @@
-package org.kmm.airpurifier.data.remote.local
+package org.kmm.airpurifier.data.local
 
-import BLEDeviceDatabase
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase

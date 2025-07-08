@@ -17,7 +17,7 @@ kotlin = "2.2.0"
 koin = "4.1.0"
 
 kotlinxCoroutinesTest = "1.10.2"
-ksp = "2.1.21-2.0.1"
+ksp = "2.1.21-2.0.2"
 mockk = "1.14.4"
 room = "2.7.2"
 sqlite = "2.5.2"
@@ -27,7 +27,7 @@ kmmLogs = "2.7.1"
 kmmUuid = "0.8.4"
 kotlinx-datetime = "0.7.0"
 
-ktor = "3.2.0"
+ktor = "3.2.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

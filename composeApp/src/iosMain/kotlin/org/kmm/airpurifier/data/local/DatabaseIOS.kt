@@ -1,6 +1,5 @@
 package org.kmm.airpurifier.data.local
 
-import BLEDeviceDatabase
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
