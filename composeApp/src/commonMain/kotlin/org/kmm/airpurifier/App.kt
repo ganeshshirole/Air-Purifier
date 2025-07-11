@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.kmm.airpurifier.presentation.intent.HomeScreenIntent
 import org.kmm.airpurifier.presentation.ui.screen.HomeScreen
 import org.kmm.airpurifier.presentation.ui.screen.SecondScreen
 import org.kmm.airpurifier.presentation.ui.viewmodel.HomeViewModel
@@ -23,7 +24,14 @@ fun App() {
             composable(route = "home") {
                 val viewModel = koinViewModel<HomeViewModel>()
                 HomeScreen(viewModel.state) {
-                    viewModel.handleIntent(it)
+                    when (it) {
+                        is HomeScreenIntent.Navigate -> {
+                            navController.navigate(it.routeName)
+                        }
+                        else -> {
+                            viewModel.handleIntent(it)
+                        }
+                    }
                 }
             }
             composable(route = "second") {

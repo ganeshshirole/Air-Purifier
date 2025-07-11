@@ -56,6 +56,7 @@ class HomeViewModel(private val client: Client, private val deviceRepository: De
             is HomeScreenIntent.Power -> power(intent.isOn)
             is HomeScreenIntent.UVLight -> uvLight(intent.isOn)
             is HomeScreenIntent.ShowDialog -> showDialog(intent.isShow)
+            else -> {}
         }
     }
 

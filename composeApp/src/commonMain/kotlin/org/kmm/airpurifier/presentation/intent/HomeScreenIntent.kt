@@ -10,4 +10,5 @@ sealed class HomeScreenIntent {
     data object AmbientLight : HomeScreenIntent()
     data class UVLight(val isOn: Boolean): HomeScreenIntent()
     data class ShowDialog(val isShow: Boolean) : HomeScreenIntent()
+    data class Navigate(val routeName: String) : HomeScreenIntent()
 }

@@ -11,5 +11,6 @@ data class HomeScreenState(
     val echo: Boolean = false,
     val isLedOn: Boolean = false,
     val error: Boolean = false,
-    val showDialog: Boolean = false
+    val showDialog: Boolean = false,
+    val navigate: String = "/"
 )

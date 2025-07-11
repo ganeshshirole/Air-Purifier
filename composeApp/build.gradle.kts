@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -41,9 +42,10 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
 
-            implementation(libs.ktor.client.okhttp.get().toString()) {
-                exclude(group = "io.ktor", module = "ktor-client-core-jvm")
-            }
+            implementation(libs.ktor.client.android)
+//            implementation(libs.ktor.client.okhttp.get().toString()) {
+//                exclude(group = "io.ktor", module = "ktor-client-core-jvm")
+//            }
         }
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -76,6 +78,10 @@ kotlin {
 
             implementation(libs.kmqtt.common)
             implementation(libs.kmqtt.client)
+
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
