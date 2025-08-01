@@ -80,6 +80,7 @@ kotlin {
             implementation(libs.kmqtt.client)
 
             implementation(libs.coil.compose)
+            implementation(libs.coil.svg)
             implementation(libs.coil.network.ktor)
 
         }
